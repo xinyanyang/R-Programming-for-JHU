@@ -1,0 +1,56 @@
+rankall <- function(result, num = "best") {
+    ## Read outcome data
+    outcome <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+    
+    ## Check that  result is valid
+    
+    if (result %in% c("heart attack","heart failure","pneumonia") ) {
+    } else {
+        stop ( print ("invalid outcome") )
+    }
+    
+    ## For each state, find the hospital of the given rank
+    column_index <- 0
+    if (result == "heart attack") {
+        column_index = 11  
+    } else if (result == "heart failure"){
+        column_index = 17
+    } else {
+        column_index = 23
+    }
+    
+    data<- outcome[,c(2,7,column_index)]
+    data[,3]<-as.numeric(data[,3]) 
+    data<- na.omit(data)
+    
+    allstates<- 0
+    allstates<- unique(data[,2])  ##unique是用来计算某向量中一共有多少不同的元素的
+    allstates<- allstates[order(allstates)]  ##将所有州按顺序排列
+
+    HOSPITAL<- vector(mode = "character") ##新建两个字符型变量，长度不用设定
+    STATE<- vector(mode = "character")
+    
+    total<-0 
+    
+    for (i in 1:length(allstates)) {
+        data2<- subset(data, data[,2]== allstates[i])  ###这里需要注意data的后标
+        data3<- data2[order(data2[,3],data2[,1]),] 
+        total<- nrow(data2) 
+        
+        if (num == "best") {
+            number = 1
+        } else if (num == "worst") {
+            number = total
+        } else {
+            number = num
+        }
+        if (number > total) {
+            HOSPITAL[i]="NA"
+        } else{
+            HOSPITAL[i]<- data3[number, 1] 
+        }
+
+        STATE[i]<- allstates[i]
+    }
+    return (data.frame(HOSPITAL, STATE))  ##输出数据框
+}
