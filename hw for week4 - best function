@@ -1,0 +1,44 @@
+best <- function(state, result) {
+    ## Read outcome data
+    outcome <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+    
+    ## Check that state and outcome are valid
+
+    if (state %in% outcome[,7]) {
+    } else {
+        stop ( print ("invalid state") )
+    }
+
+    if (result %in% c("heart attack","heart failure","pneumonia") ) {
+    } else {
+        stop ( print ("invalid outcome") )
+    }
+    
+    ### 确定outcome的种类
+    column_index<- 0
+    if (result == "heart attack") {
+        column_index = 11  ##赋值是单等号
+    } else if (result == "heart failure"){
+        column_index = 17
+    } else {
+        column_index = 23
+    }
+    
+    data<- outcome[,c(2,7,column_index)]##提取需要的三列合并为data frame
+    data<- subset(data, data[,2]==state)  ###挑选出我们要看的州的记录
+    data[,3]<-as.numeric(data[,3]) ##将字符型变量转化为数值型
+    data<- na.omit(data) ## 去除缺失值
+    data2<- data[order(data[,1]),] ##将数据按照医院名首字母排序，这样后面就不用比较首字母了,这里order的用法很重要！搞清楚括号怎么加！
+    num<-nrow(data2)                
+
+    ## Return hospital name in that state with lowest 30-day death
+
+    lowest<- data2[1,]    ##比较得出死亡率最小的医院
+    for (i in 2:num) {
+        if (data2[i,3] < lowest[3]) {
+            lowest<- data2[i,]
+        } 
+    }
+     
+    return(lowest[1])
+}
