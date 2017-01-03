@@ -1,0 +1,20 @@
+##Write a function that reads a directory full of files and reports the number of completely observed cases in each data file. 
+##The function should return a data frame where the first column is the name of the file and the second column is the number of complete cases.
+
+corr<-function(directory, threshold=0){
+    x<-0
+    correlations<-vector("numeric")
+    nobs<-vector("numeric")
+    
+    for (i in 1:332) {
+        thefile<-list.files(full.names = TRUE)[i]
+        data<-read.csv(thefile)
+        nobs[i]<-sum(complete.cases(data$"Date", data$"sulfate", data$"nitrate") )
+        
+        if (nobs[i]>threshold) {
+            x<-x+1
+            correlations[x]<-cor(data$"sulfate", data$"nitrate", use="pairwise.complete.obs")
+        }
+    }
+    correlations
+}
