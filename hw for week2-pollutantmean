@@ -1,0 +1,28 @@
+##Write a function named 'pollutantmean' that calculates the mean of a pollutant (sulfate or nitrate) across a specified list of monitors.
+##The function 'pollutantmean' takes three arguments: 'directory', 'pollutant', and 'id'.
+##Given a vector monitor ID numbers, 'pollutantmean' reads that monitors' particulate matter data from the directory 
+##specified in the 'directory' argument and returns the mean of the pollutant across all of the monitors, ignoring any missing values coded as NA. 
+
+pollutantmean<-function(directory,pollutant,id=1:332){
+    num<-length(id)
+    means<-numeric(num)
+    counts<-sums<-0.0
+    
+    for (i in 1:num) {
+        thefile<-list.files(full.names = TRUE)[id[i]]    ##list.files是用来读取子文件的
+        pollutiondata<-read.csv(thefile)
+        
+        if (pollutant=="sulfate") {
+            po<-pollutiondata[,2]
+        } else {
+            po<-pollutiondata[,3]
+        }
+        
+        bad<-is.na(po)     ###筛选掉无效值
+        sums=sums+sum(po[!bad])
+        counts=counts+length(po[!bad])
+        i=i+1
+    }
+    pm<-sums/counts
+    pm
+}
