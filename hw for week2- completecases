@@ -1,0 +1,20 @@
+##Write a function that reads a directory full of files and reports the number of completely observed cases in each data file. 
+##The function should return a data frame where the first column is the name of the file and the second column is the number of complete cases.
+
+complete<-function(directory, id){
+    num<-length(id)
+    count<-0
+    nobs<-vector("numeric",length=num) ##定义nobs是一个长度和id一样的vector
+    
+    for (i in 1:num) {
+        thefile<-list.files(full.names = TRUE)[id[i]]
+        data<-read.csv(thefile)
+        
+        good<-complete.cases(data$"Date", data$"sulfate", data$"nitrate")  ##complete.cases是用来判断几个并列object中每一项是true or false
+        nobs[i]<-sum(good)
+        i<-i+1
+        
+    }
+    x<-data.frame(id, nobs)
+    x    
+}
